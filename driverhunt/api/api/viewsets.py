@@ -1,16 +1,19 @@
 from api.models import Driver, Position
-from .serializers import DriverSerializer, PositionSerializer
-from rest_framework import viewsets
+from .serializers import DriverSerializer, PositionSerializer, LastPositionSerializer
+from rest_framework import viewsets, generics, permissions
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404, get_list_or_404
+from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
+import datetime as dt
 
 
 class DriverViewSet(viewsets.ViewSet):
     # list, create, retrieve, update, partial_update, destroy
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
     def list(self, request):
-        print(request)
         queryset = Driver.objects.all()
-        serializer = DriverSerializer(queryset, many=True)
+        #serializer = DriverSerializer(queryset, many=True)
+        serializer = LastPositionSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
@@ -30,6 +33,7 @@ class DriverViewSet(viewsets.ViewSet):
 
 
 class PositionViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
     def retrieve(self, request, pk=None):
         positions = Position.objects.all()
         drivers = Driver.objects.all()
