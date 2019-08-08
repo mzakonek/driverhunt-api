@@ -43,7 +43,17 @@ class PositionViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def create(self, request):
-        print(request.data['driverid'], request.data['x_latitude'])
+        driverid = request.data['driverid']
+        x_longitude = request.data['longitude']
+        y_latitude = request.data['latitude']
+
+        queryset = Driver.objects.all()
+        driver = get_object_or_404(queryset, driverid=int(driverid))
+
+        position = Position.objects.create(driver=driver, x_longitude=x_longitude, y_latitude=y_latitude)
+        serializer = PositionSerializer(position)
+
+        return Response(serializer.data)
 
     #
 # class DriverViewSet(viewsets.ModelViewSet):
